@@ -14,7 +14,10 @@ import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify.dart';
 import 'package:flutter/material.dart';
 
-import 'package:mobile_app/services/auth/auth_status.dart';
+enum AuthStatus {
+  authenticated,
+  unauthenticated,
+}
 
 class AuthRepository {
   Future<String?> _getUserIdFromAttributes() async {
@@ -59,15 +62,15 @@ class AuthRepository {
   // todo: verify how to 
   Future<bool> signUp({
     required String username,
-    required String email, // make nullable, but one of email and phone number must be specified.
     required String password,
+    required String email, // make nullable, but one of email and phone number must be specified.
     required String phoneNumber, // make nullable, but one of email and phone number must be specified.
   }) async {
     if (!email.trim().isValidEmail()){
       throw InvalidParameterException("$email is not a valid email-adress.");
     }
     if (!phoneNumber.trim().isValidPhoneNumber()){
-      throw InvalidParameterException("$email is not a valid email-adress.");
+      throw InvalidParameterException("$phoneNumber is not a valid phone number.");
     }
 
     final options =

@@ -9,10 +9,10 @@
 /// - wir verwenden nicht das login ui von amplify zunächst; können wir uns allerdings gemeinsam mit den designern nochmal anschauen
 /// - bei login immer an device erinnern
 /// - bei logout device vergewssen
-/// 
 
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify.dart';
+import 'package:flutter/material.dart';
 
 class AuthRepository {
   Future<String> _getUserIdFromAttributes() async {
@@ -32,11 +32,12 @@ class AuthRepository {
       final session = await Amplify.Auth.fetchAuthSession();
 
       return session.isSignedIn ? (await _getUserIdFromAttributes()) : null;
-    } catch (e) {
-      rethrow;
+    } on AuthException catch (e) {
+      debugPrint(e.message);
     }
   }
-
+  
+  // todo: Verify how to implement "always remember device" on login. 
   Future<String?> login({
     required String username,
     required String password,
@@ -48,8 +49,8 @@ class AuthRepository {
       );
 
       return result.isSignedIn ? (await _getUserIdFromAttributes()) : null;
-    } catch (e) {
-      rethrow;
+    } on AuthException catch (e) {
+      debugPrint(e.message);
     }
   }
 
@@ -78,8 +79,9 @@ class AuthRepository {
         options: options,
       );
       return result.isSignUpComplete;
-    } catch (e) {
-      rethrow;
+    } on AuthException catch (e) {
+      debugPrint(e.message);
+      return false;
     }
   }
 
@@ -93,13 +95,21 @@ class AuthRepository {
         confirmationCode: confirmationCode.trim(),
       );
       return result.isSignUpComplete;
-    } catch (e) {
-      rethrow;
+    } on AuthException catch (e) {
+      debugPrint(e.message);
+      return false;
     }
   }
 
-  Future<void> signOut() async {
-    await Amplify.Auth.signOut();
+  // todo: Verify how to implement "forgetting device" on sign out.
+  Future<bool> signOut() async {
+    try {
+      await Amplify.Auth.signOut(options: const SignOutOptions(globalSignOut: true));
+      return true;
+    } catch (e) {
+      debugPrint("Error on sign out:\n" + e.toString());
+      return false;
+    }
   }
 }
 

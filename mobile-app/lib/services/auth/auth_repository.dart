@@ -14,6 +14,8 @@ import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify.dart';
 import 'package:flutter/material.dart';
 
+import 'package:mobile_app/services/auth/auth_status.dart';
+
 class AuthRepository {
   Future<String?> _getUserIdFromAttributes() async {
     try {
@@ -27,18 +29,18 @@ class AuthRepository {
     }
   }
 
-  Future<String?> attemptAutoLogin() async {
+  Future<AuthStatus?> attemptAutoLogin() async {
     try {
       final session = await Amplify.Auth.fetchAuthSession();
 
-      return session.isSignedIn ? (await _getUserIdFromAttributes()) : null;
+      return session.isSignedIn ? AuthStatus.authenticated : AuthStatus.unauthenticated;
     } on AuthException catch (e) {
       debugPrint(e.message);
     }
   }
   
   // todo: Verify how to implement "always remember device" on login. 
-  Future<String?> login({
+  Future<AuthStatus?> login({
     required String username,
     required String password,
   }) async {
@@ -48,7 +50,7 @@ class AuthRepository {
         password: password.trim(),
       );
 
-      return result.isSignedIn ? (await _getUserIdFromAttributes()) : null;
+      return result.isSignedIn ? AuthStatus.authenticated : AuthStatus.unauthenticated;
     } on AuthException catch (e) {
       debugPrint(e.message);
     }

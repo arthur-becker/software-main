@@ -20,6 +20,8 @@ class MyAppState extends State<MyApp> {
   initStateAsync() async {
     await AmplifyIntegration.initialize();
 
+    // todo: set _isAmplifyConfigured Flag for showing loading view?
+
     ///todo: dummy data, replace with db-version
     setState(() {
       themeData = ThemeData();

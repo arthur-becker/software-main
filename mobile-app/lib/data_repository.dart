@@ -1,7 +1,7 @@
 import 'package:amplify_flutter/amplify.dart';
 import 'package:mobile_app/models/ModelProvider.dart';
 
-/// Int
+/// Interfaces with database
 class DataRepository {
   Future<User?> getUserById(String userId) async {
     try {

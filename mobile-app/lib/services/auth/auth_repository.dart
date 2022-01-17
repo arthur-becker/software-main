@@ -15,15 +15,15 @@ import 'package:amplify_flutter/amplify.dart';
 import 'package:flutter/material.dart';
 
 class AuthRepository {
-  Future<String> _getUserIdFromAttributes() async {
+  Future<String?> _getUserIdFromAttributes() async {
     try {
       final attributes = await Amplify.Auth.fetchUserAttributes();
       final userId = attributes
-          .firstWhere((element) => element.userAttributeKey == 'sub')
+          .firstWhere((element) => element.userAttributeKey == 'id')
           .value;
       return userId;
-    } catch (e) {
-      rethrow;
+    } on AuthException catch (e) {
+      debugPrint(e.message);
     }
   }
 
@@ -54,6 +54,7 @@ class AuthRepository {
     }
   }
 
+  // todo: verify how to 
   Future<bool> signUp({
     required String username,
     required String email, // make nullable, but one of email and phone number must be specified.

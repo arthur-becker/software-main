@@ -55,12 +55,21 @@ class AuthRepository {
 
   Future<bool> signUp({
     required String username,
-    required String email,
+    required String email, // make nullable, but one of email and phone number must be specified.
     required String password,
+    required String phoneNumber, // make nullable, but one of email and phone number must be specified.
   }) async {
+    if (!email.trim().isValidEmail()){
+      throw InvalidParameterException("$email is not a valid email-adress.");
+    }
+    if (!phoneNumber.trim().isValidPhoneNumber()){
+      throw InvalidParameterException("$email is not a valid email-adress.");
+    }
+
     final options =
         CognitoSignUpOptions(userAttributes: {
           CognitoUserAttributeKey.email: email.trim(),
+          CognitoUserAttributeKey.phoneNumber: phoneNumber.trim(),
           });
     try {
       final result = await Amplify.Auth.signUp(
@@ -94,4 +103,20 @@ class AuthRepository {
   }
 }
 
+extension EmailValidator on String {
+  
+  // todo: unit test
+  bool isValidEmail() {
+    return RegExp(
+            r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
+        .hasMatch(this);
+  }
+
+  // todo: unit test
+  bool isValidPhoneNumber() {
+    return RegExp(
+            r'/(\b(00[1-9]{2}|0)|\B\+[1-9]{2})(\s?\(0\))?(\s)?[1-9]{2}(\s)?[0-9]{3}(\s)?[0-9]{2}(\s)?[0-9]{2}\b/')
+        .hasMatch(this);
+  }
+}
 

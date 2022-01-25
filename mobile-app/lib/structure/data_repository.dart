@@ -1,7 +1,8 @@
 import 'package:amplify_flutter/amplify.dart';
 import 'package:mobile_app/models/ModelProvider.dart';
 
-/// Interfaces with database
+/// Provides utility methods to interface with Amplify user database.
+/// 
 class DataRepository {
   Future<User?> getUserById(String userId) async {
     try {

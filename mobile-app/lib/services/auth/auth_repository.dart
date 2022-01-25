@@ -24,7 +24,7 @@ class AuthRepository {
     try {
       final attributes = await Amplify.Auth.fetchUserAttributes();
       final userId = attributes
-          .firstWhere((element) => element.userAttributeKey.toString() == 'id')
+          .firstWhere((element) => element.userAttributeKey.toString() == 'sub')
           .value;
       return userId;
     } on AuthException catch (e) {

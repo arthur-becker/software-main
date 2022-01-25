@@ -20,7 +20,7 @@ enum AuthStatus {
 }
 
 class AuthRepository {
-  Future<String?> _getUserIdFromAttributes() async {
+  Future<String?> getUserIdFromAttributes() async {
     try {
       final attributes = await Amplify.Auth.fetchUserAttributes();
       final userId = attributes

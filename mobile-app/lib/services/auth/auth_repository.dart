@@ -24,7 +24,7 @@ class AuthRepository {
     try {
       final attributes = await Amplify.Auth.fetchUserAttributes();
       final userId = attributes
-          .firstWhere((element) => element.userAttributeKey == 'id')
+          .firstWhere((element) => element.userAttributeKey.toString() == 'id')
           .value;
       return userId;
     } on AuthException catch (e) {
@@ -58,6 +58,21 @@ class AuthRepository {
       debugPrint(e.message);
     }
   }
+
+  Future<AuthStatus?> _loginWithWebUI(
+    AuthProvider authProvider,
+  ) async {
+    try {
+      SignInResult result = await Amplify.Auth.signInWithWebUI(provider:  authProvider);
+      return result.isSignedIn ? AuthStatus.authenticated : AuthStatus.unauthenticated;
+    } on AuthException catch (e) {
+      debugPrint(e.message);
+    }
+  }
+
+  Future<AuthStatus?> loginWithGoogle() => _loginWithWebUI(AuthProvider.google);
+  Future<AuthStatus?> loginWithFacebook() => _loginWithWebUI(AuthProvider.facebook);
+  Future<AuthStatus?> loginWithApple() => _loginWithWebUI(AuthProvider.apple);
 
   // todo: verify how to 
   Future<bool> signUp({

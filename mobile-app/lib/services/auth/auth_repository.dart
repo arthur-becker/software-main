@@ -11,7 +11,7 @@
 /// - bei logout device vergewssen
 
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
-import 'package:amplify_flutter/amplify.dart';
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 
 class AuthRepository {
@@ -36,8 +36,8 @@ class AuthRepository {
       debugPrint(e.message);
     }
   }
-  
-  // todo: Verify how to implement "always remember device" on login. 
+
+  // todo: Verify how to implement "always remember device" on login.
   Future<String?> login({
     required String username,
     required String password,
@@ -58,7 +58,8 @@ class AuthRepository {
     AuthProvider authProvider,
   ) async {
     try {
-      SignInResult result = await Amplify.Auth.signInWithWebUI(provider:  authProvider);
+      SignInResult result =
+          await Amplify.Auth.signInWithWebUI(provider: authProvider);
       return result.isSignedIn ? (await _getUserIdFromAttributes()) : null;
     } on AuthException catch (e) {
       debugPrint(e.message);
@@ -69,19 +70,19 @@ class AuthRepository {
   Future<String?> loginWithFacebook() => _loginWithWebUI(AuthProvider.facebook);
   Future<String?> loginWithApple() => _loginWithWebUI(AuthProvider.apple);
 
-  // todo: verify how to 
+  // todo: verify how to
   Future<bool> signUp({
     required String username,
     required String password,
     String? email,
     String? phoneNumber,
   }) async {
-    Map<CognitoUserAttributeKey,String> userAttributes = {};
+    Map<CognitoUserAttributeKey, String> userAttributes = {};
     email ??= userAttributes[CognitoUserAttributeKey.email] = email!.trim();
-    phoneNumber ??= userAttributes[CognitoUserAttributeKey.phoneNumber] = phoneNumber!.trim();
+    phoneNumber ??= userAttributes[CognitoUserAttributeKey.phoneNumber] =
+        phoneNumber!.trim();
 
-    final options =
-        CognitoSignUpOptions(userAttributes: userAttributes);
+    final options = CognitoSignUpOptions(userAttributes: userAttributes);
     try {
       final result = await Amplify.Auth.signUp(
         username: username.trim(),
@@ -114,7 +115,8 @@ class AuthRepository {
   // todo: Verify how to implement "forgetting device" on sign out.
   Future<bool> signOut() async {
     try {
-      await Amplify.Auth.signOut(options: const SignOutOptions(globalSignOut: true));
+      await Amplify.Auth.signOut(
+          options: const SignOutOptions(globalSignOut: true));
       return true;
     } catch (e) {
       debugPrint("Error on sign out:\n" + e.toString());

@@ -1,4 +1,4 @@
-import 'package:amplify_flutter/amplify.dart';
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_app/services/auth/auth_credentials.dart';
 import 'package:mobile_app/services/auth/auth_repository.dart';
@@ -27,14 +27,14 @@ class SessionCubit extends Cubit<SessionState> {
 
       User? user = await dataRepo.getUserById(userId);
 
-      // Will assign generic firstName and lastName to user, 
-      // in unlikely case of attemptAutoLogin() authenticating user, 
+      // Will assign generic firstName and lastName to user,
+      // in unlikely case of attemptAutoLogin() authenticating user,
       // but no user returned returned by datastore query.
       user ??= await dataRepo.createUser(
-          userId: userId,
-          firstName: 'User-${UUID()}',
-          lastName: '',
-        );
+        userId: userId,
+        firstName: 'User-${UUID()}',
+        lastName: '',
+      );
       emit(Authenticated(user: user));
     } on Exception {
       emit(Unauthenticated());
@@ -45,17 +45,17 @@ class SessionCubit extends Cubit<SessionState> {
 
   void showSession(AuthCredentials credentials) async {
     try {
-      if (credentials.userId == null){
+      if (credentials.userId == null) {
         emit(Unauthenticated());
       }
 
       User? user = await dataRepo.getUserById(credentials.userId!);
 
       user ??= await dataRepo.createUser(
-          userId: credentials.userId!,
-          firstName: credentials.getFirstName(),
-          lastName: credentials.getLastName(),
-        );
+        userId: credentials.userId!,
+        firstName: credentials.getFirstName(),
+        lastName: credentials.getLastName(),
+      );
 
       emit(Authenticated(user: user));
     } catch (e) {

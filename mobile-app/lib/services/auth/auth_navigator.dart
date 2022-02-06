@@ -3,8 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_app/services/auth/auth_cubit.dart';
 import 'package:mobile_app/services/auth/confirm/confirmation_view.dart';
 import 'package:mobile_app/services/auth/sign_up/sign_up_view.dart';
-
-import 'login/login_view.dart';
+import 'package:mobile_app/services/auth/login/login_view.dart';
 
 class AuthNavigator extends StatelessWidget {
   const AuthNavigator({Key? key}) : super(key: key);

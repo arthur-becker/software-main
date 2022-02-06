@@ -17,7 +17,7 @@ class DataRepository {
   }
 
   Future<User> createUser({
-    String? userId,
+    required String userId,
     required String firstName,
     required String lastName,
     String? bio,

@@ -25,6 +25,7 @@ dependencies:
   amplify_auth_cognito: ^0.3.0-rc.3
 
   cupertino_icons: ^1.0.2
+  flutter_bloc: ^8.0.1
 
 dev_dependencies:
   flutter_test:

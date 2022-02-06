@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:mobile_app/services/amplify.dart';
+import 'package:mobile_app/services/auth/auth_repository.dart';
+import 'package:mobile_app/services/session/session_cubit.dart';
+import 'package:mobile_app/structure/data_repository.dart';
+import 'package:mobile_app/app_navigator.dart';
 
 void main() {
   runApp(const MyApp());
@@ -39,8 +45,19 @@ class MyAppState extends State<MyApp> {
     return MaterialApp(
         title: 'Flutter Demo',
         theme: themeData ?? ThemeData.light(),
-        home: themeData != null
-            ? Scaffold(body: Center(child: Image.asset("assets/test/logo.png")))
-            : const Scaffold());
+        home: MultiRepositoryProvider(
+                providers: [
+                  RepositoryProvider(create: (context) => AuthRepository()),
+                  RepositoryProvider(create: (context) => DataRepository())
+                ],
+                child: BlocProvider(
+                  create: (context) => SessionCubit(
+                    authRepo: context.read<AuthRepository>(),
+                    dataRepo: context.read<DataRepository>(),
+                  ),
+                  child: const AppNavigator(),
+                ),
+              )
+            );
   }
 }

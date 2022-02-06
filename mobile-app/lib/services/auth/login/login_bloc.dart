@@ -1,44 +1,46 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mobile_app/auth/auth_credentials.dart';
-import 'package:mobile_app/auth/auth_cubit.dart';
-import 'package:mobile_app/auth/auth_repository.dart';
-import 'package:mobile_app/auth/form_submission_status.dart';
-import 'package:mobile_app/auth/login/login_event.dart';
+import 'package:mobile_app/services/auth/auth_credentials.dart';
+import 'package:mobile_app/services/auth/auth_cubit.dart';
+import 'package:mobile_app/services/auth/auth_repository.dart';
+import 'package:mobile_app/services/auth/form_submission_status.dart';
+import 'package:mobile_app/services/auth/login/login_event.dart';
 import 'package:mobile_app/services/auth/login/login_state.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   final AuthRepository authRepo;
   final AuthCubit authCubit;
 
-  LoginBloc({this.authRepo, this.authCubit}) : super(LoginState());
+  LoginBloc({required this.authRepo, required this.authCubit}) : super(LoginState()){
+    on<LoginEvent>(_mapEventToState);
+  }
 
-  @override
-  Stream<LoginState> mapEventToState(LoginEvent event) async* {
+  void _mapEventToState(LoginEvent event, Emitter<LoginState> emit) async {
     // Username updated
     if (event is LoginUsernameChanged) {
-      yield state.copyWith(username: event.username);
+      emit(state.copyWith(userName: event.userName));
 
       // Password updated
     } else if (event is LoginPasswordChanged) {
-      yield state.copyWith(password: event.password);
+      emit(state.copyWith(password: event.password));
 
       // Form submitted
     } else if (event is LoginSubmitted) {
-      yield state.copyWith(formStatus: FormSubmitting());
+      emit(state.copyWith(formStatus: FormSubmitting()));
 
       try {
         final userId = await authRepo.login(
-          username: state.username,
+          username: state.userName,
           password: state.password,
         );
-        yield state.copyWith(formStatus: SubmissionSuccess());
+        emit(state.copyWith(formStatus: SubmissionSuccess()));
 
         authCubit.launchSession(AuthCredentials(
-          username: state.username,
+          userName: state.userName,
+          password: state.password,
           userId: userId,
         ));
       } catch (e) {
-        yield state.copyWith(formStatus: SubmissionFailed(e));
+        emit(state.copyWith(formStatus: SubmissionFailed(e as Exception)));
       }
     }
   }

@@ -14,13 +14,8 @@ import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify.dart';
 import 'package:flutter/material.dart';
 
-enum AuthStatus {
-  authenticated,
-  unauthenticated,
-}
-
 class AuthRepository {
-  Future<String?> getUserIdFromAttributes() async {
+  Future<String?> _getUserIdFromAttributes() async {
     try {
       final attributes = await Amplify.Auth.fetchUserAttributes();
       final userId = attributes
@@ -32,18 +27,18 @@ class AuthRepository {
     }
   }
 
-  Future<AuthStatus?> attemptAutoLogin() async {
+  Future<String?> attemptAutoLogin() async {
     try {
       final session = await Amplify.Auth.fetchAuthSession();
 
-      return session.isSignedIn ? AuthStatus.authenticated : AuthStatus.unauthenticated;
+      return session.isSignedIn ? (await _getUserIdFromAttributes()) : null;
     } on AuthException catch (e) {
       debugPrint(e.message);
     }
   }
   
   // todo: Verify how to implement "always remember device" on login. 
-  Future<AuthStatus?> login({
+  Future<String?> login({
     required String username,
     required String password,
   }) async {
@@ -53,46 +48,40 @@ class AuthRepository {
         password: password.trim(),
       );
 
-      return result.isSignedIn ? AuthStatus.authenticated : AuthStatus.unauthenticated;
+      return result.isSignedIn ? (await _getUserIdFromAttributes()) : null;
     } on AuthException catch (e) {
       debugPrint(e.message);
     }
   }
 
-  Future<AuthStatus?> _loginWithWebUI(
+  Future<String?> _loginWithWebUI(
     AuthProvider authProvider,
   ) async {
     try {
       SignInResult result = await Amplify.Auth.signInWithWebUI(provider:  authProvider);
-      return result.isSignedIn ? AuthStatus.authenticated : AuthStatus.unauthenticated;
+      return result.isSignedIn ? (await _getUserIdFromAttributes()) : null;
     } on AuthException catch (e) {
       debugPrint(e.message);
     }
   }
 
-  Future<AuthStatus?> loginWithGoogle() => _loginWithWebUI(AuthProvider.google);
-  Future<AuthStatus?> loginWithFacebook() => _loginWithWebUI(AuthProvider.facebook);
-  Future<AuthStatus?> loginWithApple() => _loginWithWebUI(AuthProvider.apple);
+  Future<String?> loginWithGoogle() => _loginWithWebUI(AuthProvider.google);
+  Future<String?> loginWithFacebook() => _loginWithWebUI(AuthProvider.facebook);
+  Future<String?> loginWithApple() => _loginWithWebUI(AuthProvider.apple);
 
   // todo: verify how to 
   Future<bool> signUp({
     required String username,
     required String password,
-    required String email, // make nullable, but one of email and phone number must be specified.
-    required String phoneNumber, // make nullable, but one of email and phone number must be specified.
+    String? email,
+    String? phoneNumber,
   }) async {
-    if (!email.trim().isValidEmail()){
-      throw InvalidParameterException("$email is not a valid email-adress.");
-    }
-    if (!phoneNumber.trim().isValidPhoneNumber()){
-      throw InvalidParameterException("$phoneNumber is not a valid phone number.");
-    }
+    Map<CognitoUserAttributeKey,String> userAttributes = {};
+    email ??= userAttributes[CognitoUserAttributeKey.email] = email!.trim();
+    phoneNumber ??= userAttributes[CognitoUserAttributeKey.phoneNumber] = phoneNumber!.trim();
 
     final options =
-        CognitoSignUpOptions(userAttributes: {
-          CognitoUserAttributeKey.email: email.trim(),
-          CognitoUserAttributeKey.phoneNumber: phoneNumber.trim(),
-          });
+        CognitoSignUpOptions(userAttributes: userAttributes);
     try {
       final result = await Amplify.Auth.signUp(
         username: username.trim(),
@@ -133,21 +122,3 @@ class AuthRepository {
     }
   }
 }
-
-extension EmailValidator on String {
-  
-  // todo: unit test
-  bool isValidEmail() {
-    return RegExp(
-            r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
-        .hasMatch(this);
-  }
-
-  // todo: unit test
-  bool isValidPhoneNumber() {
-    return RegExp(
-            r'/(\b(00[1-9]{2}|0)|\B\+[1-9]{2})(\s?\(0\))?(\s)?[1-9]{2}(\s)?[0-9]{3}(\s)?[0-9]{2}(\s)?[0-9]{2}\b/')
-        .hasMatch(this);
-  }
-}
-

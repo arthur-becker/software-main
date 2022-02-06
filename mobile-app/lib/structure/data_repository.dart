@@ -31,6 +31,7 @@ class DataRepository {
       lastName: lastName, 
       permissions: permissions,
       bio: bio,
+      schemeVersion: 1020,
     );
     try {
       await Amplify.DataStore.save(newUser);

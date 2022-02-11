@@ -95,7 +95,8 @@ enum InterventionType {
 type Content @model {
   name: String!
   description: String @default(value: "")
-  interventions: [Intervention!]! @manyToMany(relationName: "InterventionContentRelation")
+  interventions: [Intervention!]!
+    @manyToMany(relationName: "InterventionContentRelation")
   tags: [String!]!
   schemeVersion: Int @default(value: "0")
 }
@@ -125,16 +126,17 @@ enum QuestionType {
 }
 
 type Question {
-  id: ID! # todo: dependent ID
+  id: ID! # todo: dependent ID; unique for survey
   text: String!
   type: QuestionType!
   questionOptions: [QuestionOption!]
+  isFollowUpQuestion: Boolean!
 }
 
 type QuestionOption {
   id: ID!
   text: String!
-  followUpQuestion: Question
+  followUpQuestionID: ID
 }
 
 # entityCollection

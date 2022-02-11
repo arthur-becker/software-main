@@ -60,13 +60,14 @@ export declare class Question {
   readonly text: string;
   readonly type: QuestionType | keyof typeof QuestionType;
   readonly questionOptions?: QuestionOption[];
+  readonly isFollowUpQuestion: boolean;
   constructor(init: ModelInit<Question>);
 }
 
 export declare class QuestionOption {
   readonly id: string;
   readonly text: string;
-  readonly followUpQuestion?: Question;
+  readonly followUpQuestionID?: string;
   constructor(init: ModelInit<QuestionOption>);
 }
 

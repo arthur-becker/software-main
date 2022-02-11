@@ -1266,6 +1266,13 @@ export const schema = {
                     "isRequired": true,
                     "attributes": [],
                     "isArrayNullable": true
+                },
+                "isFollowUpQuestion": {
+                    "name": "isFollowUpQuestion",
+                    "isArray": false,
+                    "type": "Boolean",
+                    "isRequired": true,
+                    "attributes": []
                 }
             }
         },
@@ -1286,12 +1293,10 @@ export const schema = {
                     "isRequired": true,
                     "attributes": []
                 },
-                "followUpQuestion": {
-                    "name": "followUpQuestion",
+                "followUpQuestionID": {
+                    "name": "followUpQuestionID",
                     "isArray": false,
-                    "type": {
-                        "nonModel": "Question"
-                    },
+                    "type": "ID",
                     "isRequired": false,
                     "attributes": []
                 }
@@ -1489,5 +1494,5 @@ export const schema = {
             }
         }
     },
-    "version": "1c3c9873d0810d7fa85c409ab590431c"
+    "version": "b47ec14c06ef690adc833bae4a5d4aa1"
 };

@@ -14,7 +14,7 @@ class AmplifyIntegration {
       AmplifyDataStore(modelProvider: ModelProvider.instance);
 
   ///api of cloud database (responsible for automated syncing)
-  static final AmplifyAPI _amplifyAPI = AmplifyAPI(); 
+  static final AmplifyAPI _amplifyAPI = AmplifyAPI();
 
   ///auth for api and storage
   static final AmplifyAuthCognito _amplifyAuthCognito = AmplifyAuthCognito();
